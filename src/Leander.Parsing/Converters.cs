@@ -43,6 +43,8 @@ public static class Converters
         .AddFormat("c")
         .Build();
 
+    public static IConverter<TEnum> Enum<TEnum>() where TEnum : struct, Enum => EnumConverterCache<TEnum>.Instance;
+
     public static IConverter<DateTime> DateTimeUtc { get; } = new DateTimeConverterBuilder()
         .AddFormat("yyyy-MM-ddTHH:mm:ssK")
         .AddFormat("yyyy-MM-dd")
