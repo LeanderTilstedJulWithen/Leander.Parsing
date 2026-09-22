@@ -1,15 +1,16 @@
-using System.Reflection;
-using Leander.Parsing.Internal;
-
 namespace Leander.Parsing;
 
 public sealed class ConverterRegistry
 {
     private readonly IReadOnlyDictionary<(Type Type, string? Key), object> _converters;
+    private readonly IReadOnlyList<Func<ConverterRegistry, Type, string?, object?>> _fallbacks;
 
-    internal ConverterRegistry(IReadOnlyDictionary<(Type Type, string? Key), object> converters)
+    internal ConverterRegistry(
+        IReadOnlyDictionary<(Type Type, string? Key), object> converters,
+        IReadOnlyList<Func<ConverterRegistry, Type, string?, object?>> fallbacks)
     {
         _converters = converters;
+        _fallbacks = fallbacks;
     }
 
     public IConverter<T> GetConverter<T>(string? key = null)
@@ -19,9 +20,9 @@ public sealed class ConverterRegistry
             return (IConverter<T>)value;
         }
 
-        if (key is null && TryCreateEnumConverter<T>() is { } enumConverter)
+        if (ResolveFallback<T>(key) is { } fallbackConverter)
         {
-            return enumConverter;
+            return fallbackConverter;
         }
 
         return (IConverter<T>)_converters[(typeof(T), key)];
@@ -35,19 +36,20 @@ public sealed class ConverterRegistry
             return true;
         }
 
-        converter = key is null ? TryCreateEnumConverter<T>() : null;
+        converter = ResolveFallback<T>(key);
         return converter is not null;
     }
 
-    private static IConverter<T>? TryCreateEnumConverter<T>()
+    private IConverter<T>? ResolveFallback<T>(string? key)
     {
-        if (!typeof(T).IsEnum)
+        foreach (var fallback in _fallbacks)
         {
-            return null;
+            if (fallback(this, typeof(T), key) is { } converter)
+            {
+                return (IConverter<T>)converter;
+            }
         }
 
-        var cacheType = typeof(EnumConverterCache<>).MakeGenericType(typeof(T));
-        var field = cacheType.GetField(nameof(EnumConverterCache<DayOfWeek>.Instance), BindingFlags.Public | BindingFlags.Static)!;
-        return (IConverter<T>)field.GetValue(null)!;
+        return null;
     }
 }
