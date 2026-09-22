@@ -21,6 +21,9 @@ public sealed class ConverterRegistryBuilder
         .Register(Converters.Single)
         .Register(Converters.Double)
         .Register(Converters.Decimal)
+        .Register(Converters.Guid)
+        .Register(Converters.Uri)
+        .Register(Converters.TimeSpan)
         .Register(Converters.DateTimeUtc)
         .Register(Converters.DateTimeLocal, key: "Local")
         .Register(Converters.DateTimeOffset);

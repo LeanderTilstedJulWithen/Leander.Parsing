@@ -35,6 +35,14 @@ public static class Converters
 
     public static IConverter<decimal> Decimal { get; } = new DecimalConverter();
 
+    public static IConverter<Guid> Guid { get; } = new GuidConverter();
+
+    public static IConverter<Uri> Uri { get; } = new UriConverter();
+
+    public static IConverter<TimeSpan> TimeSpan { get; } = new TimeSpanConverterBuilder()
+        .AddFormat("c")
+        .Build();
+
     public static IConverter<DateTime> DateTimeUtc { get; } = new DateTimeConverterBuilder()
         .AddFormat("yyyy-MM-ddTHH:mm:ssK")
         .AddFormat("yyyy-MM-dd")
