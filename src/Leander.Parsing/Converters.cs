@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using Leander.Parsing.Internal;
 
 namespace Leander.Parsing;
@@ -44,6 +45,18 @@ public static class Converters
         .Build();
 
     public static IConverter<TEnum> Enum<TEnum>() where TEnum : struct, Enum => EnumConverterCache<TEnum>.Instance;
+
+    public static IConverter<IReadOnlyList<T>> List<T>(IConverter<T> elementConverter, char delimiter = ',') =>
+        new ListConverter<T>(elementConverter, delimiter);
+
+    public static IConverter<T> Json<T>(JsonSerializerOptions? options = null) => new JsonValueConverter<T>(options);
+
+    public static IConverter<IReadOnlyDictionary<TKey, TValue>> Dictionary<TKey, TValue>(
+        IConverter<TKey> keyConverter,
+        IConverter<TValue> valueConverter,
+        char entryDelimiter = ',',
+        char keyValueDelimiter = '=') where TKey : notnull =>
+        new DictionaryConverter<TKey, TValue>(keyConverter, valueConverter, entryDelimiter, keyValueDelimiter);
 
     public static IConverter<DateTime> DateTimeUtc { get; } = new DateTimeConverterBuilder()
         .AddFormat("yyyy-MM-ddTHH:mm:ssK")
