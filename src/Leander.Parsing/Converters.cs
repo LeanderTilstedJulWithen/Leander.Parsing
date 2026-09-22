@@ -7,9 +7,33 @@ public static class Converters
 {
     public static IConverter<string> String { get; } = new StringConverter();
 
+    public static IConverter<bool> Boolean { get; } = new BooleanConverter();
+
+    public static IConverter<byte> Byte { get; } = new ByteConverter();
+
+    public static IConverter<sbyte> SByte { get; } = new SByteConverter();
+
+    public static IConverter<short> Int16 { get; } = new Int16Converter();
+
+    public static IConverter<ushort> UInt16 { get; } = new UInt16Converter();
+
     public static IConverter<int> Int32 { get; } = new IntConverter();
 
+    public static IConverter<int> Int32Hex { get; } = new HexInt32Converter();
+
+    public static IConverter<uint> UInt32 { get; } = new UInt32Converter();
+
+    public static IConverter<uint> UInt32Hex { get; } = new HexUInt32Converter();
+
+    public static IConverter<long> Int64 { get; } = new Int64Converter();
+
+    public static IConverter<ulong> UInt64 { get; } = new UInt64Converter();
+
+    public static IConverter<float> Single { get; } = new SingleConverter();
+
     public static IConverter<double> Double { get; } = new DoubleConverter();
+
+    public static IConverter<decimal> Decimal { get; } = new DecimalConverter();
 
     public static IConverter<DateTime> DateTimeUtc { get; } = new DateTimeConverterBuilder()
         .AddFormat("yyyy-MM-ddTHH:mm:ssK")
